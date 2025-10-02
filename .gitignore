@@ -1,0 +1,9 @@
+venv/
+banya-v-borzyh-bot/banya-bot/.env
+
+banya-v-borzyh-bot/banya-bot/credentials.json
+*.json
+*.key
+*.pem
+service-account*.json
+
