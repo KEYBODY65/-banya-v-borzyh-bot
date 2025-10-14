@@ -1,9 +1,9 @@
-venv/
+.DS_Store
+
+banya-v-borzyh-bot/.DS_Store
+banya-v-borzyh-bot/banya-bot/.DS_Store
+banya-v-borzyh-bot/banya-bot/app/.DS_Store
+
 banya-v-borzyh-bot/banya-bot/.env
-
 banya-v-borzyh-bot/banya-bot/credentials.json
-*.json
-*.key
-*.pem
-service-account*.json
-
+banya-v-borzyh-bot/banya-bot/venv/
