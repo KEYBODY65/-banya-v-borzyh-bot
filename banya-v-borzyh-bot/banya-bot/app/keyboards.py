@@ -3,9 +3,14 @@ from collections import defaultdict
 
 from .data import get_data
 
-start_kb = ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="Помощь")]
-    ])
+start_kb = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Помощь")],
+        [KeyboardButton(text="📅 Забронировать")],
+        [KeyboardButton(text="📋 Мои записи")]
+    ],
+    resize_keyboard=True
+)
 
 async def help_kb(data):
     keyboard = []
@@ -17,6 +22,8 @@ async def help_kb(data):
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 back_to_help = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='Назад', callback_data='back_to_faq')]
-    ])
+    [InlineKeyboardButton(text='🔙 Назад к помощи', callback_data='back_to_faq')]
+])
+
+
 

@@ -7,3 +7,6 @@ banya-v-borzyh-bot/banya-bot/app/.DS_Store
 banya-v-borzyh-bot/banya-bot/.env
 banya-v-borzyh-bot/banya-bot/credentials.json
 banya-v-borzyh-bot/banya-bot/venv/
+banya-v-borzyh-bot/banya-bot/app/__pycache__
+
+banya-v-borzyh-bot/banya-bot/banya_bot.db
