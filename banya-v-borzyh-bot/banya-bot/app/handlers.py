@@ -1,16 +1,19 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
+from aiogram.types import callback_query
 from app.fsm import WaitingListStates
 from app.database import get_db_session, Client, WaitingList
 from app.keyboards import start_kb, help_kb, back_to_help, get_dates_keyboard, get_people_count_keyboard, get_waiting_confirmation_keyboard, get_waiting_management_keyboard
+from app.admin_keyboards import get_admin_panel_keyboard
+from app.admin_filters import AdminFilter
 from .data import get_data
 
 router = Router()
 data = []
 
-@router.message(Command("start"))
-async def cmd_start(message: types.Message):
+@router.message(Command("start"), ~AdminFilter())
+async def user_start(message: types.Message):
     await message.answer(
         "👋 Добро пожаловать в банный комплекс!\n"
         "Выберите действие:",
@@ -54,8 +57,6 @@ async def choose_dates(callback: types.CallbackQuery, state: FSMContext):
     
     dates_map = {
         "date_any": "Неважно",
-        "date_weekend": "Выходные",
-        "date_weekdays": "Будни",
         "date_specific": "Конкретные даты"
     }
     

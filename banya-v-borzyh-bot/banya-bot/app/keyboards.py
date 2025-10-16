@@ -31,8 +31,6 @@ back_to_help = InlineKeyboardMarkup(inline_keyboard=[
 def get_dates_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🗓️ Неважно", callback_data="date_any")],
-        [InlineKeyboardButton(text="🎉 Выходные", callback_data="date_weekend")],
-        [InlineKeyboardButton(text="📅 Будни", callback_data="date_weekdays")],
         [InlineKeyboardButton(text="📌 Конкретные даты", callback_data="date_specific")]
     ])
 

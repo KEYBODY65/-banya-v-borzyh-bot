@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import logging
 from app.handlers import router
+from app.admin_panel import admin_router
 
 load_dotenv()
 
@@ -18,6 +19,7 @@ async def main(token):
     dp = Dispatcher()
 
     dp.include_router(router)
+    dp.include_router(admin_router)
 
     try:
         await dp.start_polling(bot)

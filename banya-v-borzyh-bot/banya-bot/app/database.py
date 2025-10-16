@@ -8,7 +8,7 @@ class Client(Base):
     __tablename__ = 'clients'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
-    username = Column(String(100))
+    username = Column(String(100), nullable=True)
     first_name = Column(String(100))
     phone = Column(String(20))
     created_at = Column(DateTime, default=datetime.now)
