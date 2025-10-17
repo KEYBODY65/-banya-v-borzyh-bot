@@ -11,7 +11,6 @@ def get_waiting_list_with_contacts_keyboard(waiting_list):
             )
         ])
     
-    # Кнопка обновления списка
     keyboard.append([
         InlineKeyboardButton(text="🔄 Обновить", callback_data="refresh_waiting_list")
     ])
