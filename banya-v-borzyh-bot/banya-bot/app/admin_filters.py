@@ -5,15 +5,31 @@ import os
 
 load_dotenv()
 
-admin_id = os.getenv("ADMIN_ID")
-
 def is_admin(user_id: int) -> bool:
+    admin_ids = []
+    
     try:
-        admin_id_value = int(admin_id)
-        return user_id == admin_id_value
-    except (ValueError, TypeError) as e:
-        print(f"Error in is_admin: {e}, admin_id: {admin_id}")
-        return False
+        admin_id = os.getenv("ADMIN_ID_MAIN")
+        if admin_id and admin_id.strip().isdigit():
+            admin_ids.append(int(admin_id.strip()))
+    except:
+        pass
+    
+    try:
+        admin_id_additional = os.getenv("ADMIN_ID_ADDITIONAL")
+        if admin_id_additional and admin_id_additional.strip().isdigit():
+            admin_ids.append(int(admin_id_additional.strip()))
+    except:
+        pass
+        
+    try:
+        admin_id_additional_2 = os.getenv("ADMIN_ID_ADDITIONAL_2")
+        if admin_id_additional_2 and admin_id_additional_2.strip().isdigit():
+            admin_ids.append(int(admin_id_additional_2.strip()))
+    except:
+        pass
+    
+    return user_id in admin_ids
 
 class AdminFilter(Filter):
     async def __call__(self, message: types.Message) -> bool:
