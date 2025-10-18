@@ -199,7 +199,6 @@ async def cancel_waiting(callback: types.CallbackQuery, state: FSMContext):
 
 @router.message(F.text == "📋 Мой статус в очереди")
 async def show_my_waiting_status(message: types.Message):
-    print(f"DEBUG: Обработчик статуса вызван пользователем {message.from_user.id}")  # Добавь эту строку
     session = get_db_session()
     try:
         client = session.query(Client).filter_by(user_id=message.from_user.id).first()
