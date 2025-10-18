@@ -11,3 +11,7 @@ class BroadcastStates(StatesGroup):
     choosing_recipients = State()
     entering_message = State()
     confirming = State()
+
+class AdminDeleteStates(StatesGroup):
+    choosing_waiting_to_delete = State()
+    confirming_deletion = State()
