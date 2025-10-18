@@ -57,3 +57,17 @@ def get_waiting_management_keyboard():
         [InlineKeyboardButton(text="❌ Отменить запись", callback_data="cancel_my_waiting")],
         [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main")]
     ])
+
+def get_delete_confirmation_keyboard():
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="✅ Да, отменить", callback_data="confirm_user_delete"),
+            InlineKeyboardButton(text="❌ Нет, оставить", callback_data="cancel_user_delete")
+        ]
+    ])
+
+def get_waiting_status_keyboard():
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="❌ Удалить из листа ожидания", callback_data="cancel_my_waiting")],
+        [InlineKeyboardButton(text="🔙 Назад в меню", callback_data="back_to_main")]
+    ])

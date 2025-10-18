@@ -2,10 +2,13 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
 from aiogram.types import callback_query
-from app.fsm import WaitingListStates
+from app.fsm import WaitingListStates, UserDeleteStates
 from app.database import get_db_session, Client, WaitingList
-from app.keyboards import start_kb, help_kb, back_to_help, get_dates_keyboard, get_people_count_keyboard, get_waiting_confirmation_keyboard, get_waiting_management_keyboard
-from app.admin_keyboards import get_admin_panel_keyboard
+from app.keyboards import (
+    start_kb, help_kb, back_to_help, get_dates_keyboard, get_people_count_keyboard,
+    get_waiting_confirmation_keyboard, get_waiting_management_keyboard,
+    get_delete_confirmation_keyboard, get_waiting_status_keyboard
+)
 from app.admin_filters import AdminFilter
 from .data import get_data
 
@@ -225,9 +228,10 @@ async def show_my_waiting_status(message: types.Message):
             f"👥 Количество человек: {waiting_entry.people_count}\n"
             f"📅 Дата записи: {waiting_entry.created_at.strftime('%d.%m.%Y %H:%M')}\n"
             f"📊 Позиция в очереди: {position} из {len(all_waiting)}\n\n"
+            "⏳ Ожидайте, с вами свяжутся!"
         )
         
-        keyboard = get_waiting_management_keyboard()
+        keyboard = get_waiting_status_keyboard()
         await message.answer(status_text, reply_markup=keyboard)
         
     except Exception as e:
@@ -238,7 +242,7 @@ async def show_my_waiting_status(message: types.Message):
         session.close()
 
 @router.callback_query(F.data == "cancel_my_waiting")
-async def cancel_my_waiting(callback: types.CallbackQuery):
+async def start_cancel_my_waiting(callback: types.CallbackQuery, state: FSMContext):
     session = get_db_session()
     try:
         client = session.query(Client).filter_by(user_id=callback.from_user.id).first()
@@ -253,19 +257,72 @@ async def cancel_my_waiting(callback: types.CallbackQuery):
         ).first()
         
         if waiting_entry:
-            waiting_entry.is_active = False
-            session.commit()
-            await callback.message.edit_text("✅ Ваша запись удалена из листа ожидания")
+            await state.update_data(waiting_id=waiting_entry.id)
+            
+            confirmation_text = (
+                "❓ Вы уверены, что хотите отменить запись?\n\n"
+                f"📅 Предпочтительные даты: {waiting_entry.preferred_dates}\n"
+                f"👥 Количество человек: {waiting_entry.people_count}\n\n"
+                "После отмены вы будете удалены из листа ожидания."
+            )
+            
+            keyboard = get_delete_confirmation_keyboard()
+            await callback.message.edit_text(confirmation_text, reply_markup=keyboard)
+            await state.set_state(UserDeleteStates.confirming_deletion)
         else:
             await callback.answer("❌ Активная запись не найдена")
+            
+    except Exception as e:
+        await callback.answer("❌ Произошла ошибка")
+        print(f"Database error: {e}")
+    finally:
+        session.close()
+
+@router.callback_query(UserDeleteStates.confirming_deletion, F.data == "confirm_user_delete")
+async def confirm_user_delete(callback: types.CallbackQuery, state: FSMContext):
+    session = get_db_session()
+    try:
+        data = await state.get_data()
+        waiting_id = data.get('waiting_id')
+        
+        if not waiting_id:
+            await callback.answer("❌ Ошибка данных")
+            return
+        
+        waiting_entry = session.query(WaitingList).filter_by(id=waiting_id).first()
+        
+        if waiting_entry:
+            client = session.query(Client).filter_by(
+                id=waiting_entry.client_id,
+                user_id=callback.from_user.id
+            ).first()
+            
+            if not client:
+                await callback.message.edit_text("❌ Это не ваша запись")
+                return
+            
+            waiting_entry.is_active = False
+            session.commit()
+            
+            await callback.message.edit_text(
+                "✅ Ваша запись удалена из листа ожидания!\n\n"
+                "Вы можете создать новую запись через раздел '📝 Запись в лист ожидания'"
+            )
+        else:
+            await callback.message.edit_text("❌ Запись не найдена")
             
     except Exception as e:
         session.rollback()
         await callback.message.edit_text("❌ Произошла ошибка при отмене записи")
         print(f"Database error: {e}")
-        
     finally:
         session.close()
+        await state.clear()
+
+@router.callback_query(UserDeleteStates.confirming_deletion, F.data == "cancel_user_delete")
+async def cancel_user_delete(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.edit_text("✅ Отмена удаления. Ваша запись сохранена в листе ожидания.")
+    await state.clear()
 
 @router.callback_query(F.data == "back_to_main")
 async def back_to_main(callback: types.CallbackQuery):

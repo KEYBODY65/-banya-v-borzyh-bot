@@ -15,3 +15,6 @@ class BroadcastStates(StatesGroup):
 class AdminDeleteStates(StatesGroup):
     choosing_waiting_to_delete = State()
     confirming_deletion = State()
+
+class UserDeleteStates(StatesGroup):
+    confirming_deletion = State()
